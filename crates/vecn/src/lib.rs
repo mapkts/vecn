@@ -1391,10 +1391,16 @@ fn parse_struct(item: &ItemStruct) -> ParseResult {
                     ret.generic_ident = Some(ty.ident.clone());
                 }
                 Lifetime(lifetime) => {
-                    err_if_none!(lifetime.span(), "expected generic type, but found lifetime");
+                    err_if_none!(
+                        lifetime.span(),
+                        "expected generic type, but found generic lifetime"
+                    );
                 }
                 Const(cons) => {
-                    err_if_none!(cons.span(), "expected generic type, but found const");
+                    err_if_none!(
+                        cons.span(),
+                        "expected generic type, but found generic const"
+                    );
                 }
             }
         }
@@ -1443,7 +1449,7 @@ fn parse_struct(item: &ItemStruct) -> ParseResult {
                             } else {
                                 err_if_none!(
                                     fields.span(),
-                                    "expected primitive type, but found others"
+                                    "expected owned primitive type, but found others"
                                 );
                             }
                         }
@@ -1483,7 +1489,18 @@ fn parse_struct(item: &ItemStruct) -> ParseResult {
                             }
                         }
                         _ => {
-                            err_if_none!(fields.span(), "expected owned type, but found others");
+                            // err_if_none!(fields.span(), "expected owned type, but found others");
+                            if ret.is_generic {
+                                err_if_none!(
+                                    fields.span(),
+                                    "expected at most one generic type, but found others",
+                                );
+                            } else {
+                                err_if_none!(
+                                    fields.span(),
+                                    "expected owned primitive type, but found others"
+                                );
+                            }
                         }
                     }
                     prev = x;
