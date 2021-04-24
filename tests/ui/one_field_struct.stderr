@@ -1,0 +1,14 @@
+error: create a vector with only one field is not allowed
+ --> $DIR/one_field_struct.rs:2:22
+  |
+2 | struct TupleStruct<T>(T);
+  |                      ^^^
+
+error: create a vector with only one field is not allowed
+ --> $DIR/one_field_struct.rs:5:23
+  |
+5 |   struct NamedStruct<T> {
+  |  _______________________^
+6 | |     x: T,
+7 | | }
+  | |_^

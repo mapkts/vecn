@@ -1,0 +1,11 @@
+error: expected at least one field, but found nothing
+ --> $DIR/zero_field_struct.rs:2:19
+  |
+2 | struct TupleStruct();
+  |                   ^^
+
+error: expected at least one field, but found nothing
+ --> $DIR/zero_field_struct.rs:5:19
+  |
+5 | struct NamedStruct{}
+  |                   ^^

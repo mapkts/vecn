@@ -1,0 +1,15 @@
+error: expected owned primitive type, but found others
+ --> $DIR/non_owned_primitive_types.rs:2:19
+  |
+2 | struct TupleStruct(&f32 , &f32);
+  |                   ^^^^^^^^^^^^^
+
+error: expected owned primitive type, but found others
+ --> $DIR/non_owned_primitive_types.rs:5:20
+  |
+5 |   struct NamedStruct {
+  |  ____________________^
+6 | |     x: &f32,
+7 | |     y: &f32,
+8 | | }
+  | |_^

@@ -1,0 +1,31 @@
+error: expected at most one generic type, but found others
+ --> $DIR/mutiply_generic_types.rs:2:26
+  |
+2 | struct TupleStruct1<T, U>((T, U), (T, U), (T, U));
+  |                          ^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: expected at most one generic type, but found others
+ --> $DIR/mutiply_generic_types.rs:5:27
+  |
+5 |   struct NamedStruct1<T, U> {
+  |  ___________________________^
+6 | |     x: (T, U),
+7 | |     y: (T, U),
+8 | | }
+  | |_^
+
+error: expected at most one generic type, but found others
+  --> $DIR/mutiply_generic_types.rs:11:26
+   |
+11 | struct TupleStruct2<T, U>(&(T, U), &(T, U), &(T, U));
+   |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: expected at most one generic type, but found others
+  --> $DIR/mutiply_generic_types.rs:14:27
+   |
+14 |   struct NamedStruct2<T, U> {
+   |  ___________________________^
+15 | |     x: &(T, U),
+16 | |     y: &(T, U),
+17 | | }
+   | |_^
