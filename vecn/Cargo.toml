@@ -1,0 +1,23 @@
+[package]
+name = "vecn"
+version = "0.0.0"
+authors = ["Aaron Taner <mapkts@gmail.com>"]
+description = "A procedural macro that transforms user-defined structs into general vector types." 
+repository = "https://github.com/mapkts/vecn"
+documentation = "https://docs.rs/vecn/"
+readme = "../README.md"
+license = "MIT"
+keywords = ["vector", "macro"]
+categories = ["mathematics", "data-structures"]
+edition = "2018"
+
+[dependencies]
+syn = { version = "1.0", features = ["full", "extra-traits"] }
+quote = "1.0"
+proc-macro2 = "1.0"
+num = "0.4"
+
+
+[lib]
+proc-macro = true
+
