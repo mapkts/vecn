@@ -1,0 +1,47 @@
+error: expected numeric primitive type, but found others
+ --> $DIR/unaccepted_primitive_types.rs:2:20
+  |
+2 | struct TupleStruct1(usize, usize);
+  |                    ^^^^^^^^^^^^^^
+
+error: expected numeric primitive type, but found others
+ --> $DIR/unaccepted_primitive_types.rs:5:20
+  |
+5 | struct TupleStruct2(isize, isize);
+  |                    ^^^^^^^^^^^^^^
+
+error: expected numeric primitive type, but found others
+ --> $DIR/unaccepted_primitive_types.rs:8:20
+  |
+8 | struct TupleStruct3(bool, bool);
+  |                    ^^^^^^^^^^^^
+
+error: expected numeric primitive type, but found others
+  --> $DIR/unaccepted_primitive_types.rs:11:21
+   |
+11 |   struct NamedStruct1 {
+   |  _____________________^
+12 | |     x: usize,
+13 | |     y: usize,
+14 | | }
+   | |_^
+
+error: expected numeric primitive type, but found others
+  --> $DIR/unaccepted_primitive_types.rs:17:21
+   |
+17 |   struct NamedStruct2 {
+   |  _____________________^
+18 | |     x: isize,
+19 | |     y: isize,
+20 | | }
+   | |_^
+
+error: expected numeric primitive type, but found others
+  --> $DIR/unaccepted_primitive_types.rs:23:21
+   |
+23 |   struct NamedStruct3 {
+   |  _____________________^
+24 | |     x: bool,
+25 | |     y: bool,
+26 | | }
+   | |_^

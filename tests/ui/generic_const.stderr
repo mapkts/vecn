@@ -1,0 +1,11 @@
+error: expected generic type, but found generic const
+ --> $DIR/generic_const.rs:2:20
+  |
+2 | struct TupleStruct<const T: usize>(T);
+  |                    ^^^^^^^^^^^^^^
+
+error: expected generic type, but found generic const
+ --> $DIR/generic_const.rs:5:20
+  |
+5 | struct NamedStruct<const T: usize> {
+  |                    ^^^^^^^^^^^^^^

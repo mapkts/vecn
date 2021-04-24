@@ -1,0 +1,11 @@
+error: expected generic type, but found generic lifetime
+ --> $DIR/generic_lifetime.rs:2:20
+  |
+2 | struct TupleStruct<'a>(&'a f32);
+  |                    ^^
+
+error: expected generic type, but found generic lifetime
+ --> $DIR/generic_lifetime.rs:5:20
+  |
+5 | struct NamedStruct<'a> {
+  |                    ^^

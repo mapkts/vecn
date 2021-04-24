@@ -1,0 +1,15 @@
+error: all fields of this struct should be of the same type
+ --> $DIR/types_not_equal.rs:2:19
+  |
+2 | struct TupleStruct(f32, f64);
+  |                   ^^^^^^^^^^
+
+error: all fields of this struct should be of the same type
+ --> $DIR/types_not_equal.rs:5:20
+  |
+5 |   struct NamedStruct {
+  |  ____________________^
+6 | |     x: f32,
+7 | |     y: f64,
+8 | | }
+  | |_^

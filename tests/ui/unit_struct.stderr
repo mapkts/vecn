@@ -1,0 +1,5 @@
+error: unit struct cannot be made into a vector
+ --> $DIR/unit_struct.rs:2:1
+  |
+2 | struct Unit;
+  | ^^^^^^^^^^^^
