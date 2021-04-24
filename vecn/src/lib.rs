@@ -3,7 +3,7 @@
 //!
 //! # Examples
 //!
-//! Vector types can be named structs or tuple structs, with primitive elements.
+//! Vector types can be either named structs or tuple structs, with primitive elements.
 //!
 //! ```
 //! use vecn::vector;
