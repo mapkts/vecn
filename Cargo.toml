@@ -1,2 +1,5 @@
 [workspace]
-members = ["vecn", "vectory"]
+members = [
+  "crates/vecn",
+  "crates/vectory"
+]
