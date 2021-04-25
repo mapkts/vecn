@@ -103,7 +103,6 @@
 //!         Vec4::new(v3.0, v3.1, v3.2, 0.)
 //!     }
 //! }
-//! ```
 //!
 //! impl fmt::Display for Vec3 {
 //!     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -116,6 +115,8 @@
 //!         write!(f, "({}, {}, {}, {})", self.0, self.1, self.2, self.3)
 //!     }
 //! }
+//!
+//! ```
 //!
 //! [`Copy`]: std::marker::Copy
 //! [`Clone`]: std::clone::Clone
