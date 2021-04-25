@@ -2,7 +2,7 @@
 //! [![Docs.rs][docs-badge]][docs-url]
 //! [![MIT licensed][mit-badge]][mit-url]
 //! [![Build Status][actions-badge]][actions-url]
-//! 
+//!
 //! [crates-badge]: https://img.shields.io/crates/v/vecn.svg
 //! [crates-url]: https://crates.io/crates/vecn
 //! [docs-badge]: https://docs.rs/vecn/badge.svg
