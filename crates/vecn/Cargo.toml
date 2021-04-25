@@ -5,18 +5,12 @@ authors = ["Aaron Taner <mapkts@gmail.com>"]
 description = "A procedural macro that transforms user-defined structs into general vector types." 
 repository = "https://github.com/mapkts/vecn"
 documentation = "https://docs.rs/vecn/"
-readme = "../README.md"
+readme = "../../README.md"
 license = "MIT"
 keywords = ["vector", "macro"]
 categories = ["mathematics", "data-structures"]
 edition = "2018"
-include = [
-    "./Cargo.toml",
-    "./src/**",
-    "../../LICENSE",
-    "../../tests/**",
-    "../../README.md",
-]
+workspace = "../../"
 
 [dependencies]
 syn = { version = "1.0", features = ["full", "extra-traits"] }
@@ -30,7 +24,6 @@ rustversion = "1.0"
 
 [lib]
 proc-macro = true
-path = "src/lib.rs"
 
 [[test]]
 name = "integration"
