@@ -1,3 +1,4 @@
 /target
-/vecn/target
-/vectory/target
+/crates/vecn/target
+/crates/vectory/target
+Cargo.lock

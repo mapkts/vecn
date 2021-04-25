@@ -103,7 +103,6 @@
 //!         Vec4::new(v3.0, v3.1, v3.2, 0.)
 //!     }
 //! }
-//! ```
 //!
 //! impl fmt::Display for Vec3 {
 //!     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -116,6 +115,8 @@
 //!         write!(f, "({}, {}, {}, {})", self.0, self.1, self.2, self.3)
 //!     }
 //! }
+//!
+//! ```
 //!
 //! [`Copy`]: std::marker::Copy
 //! [`Clone`]: std::clone::Clone
@@ -1084,10 +1085,15 @@ fn expand(item: ItemStruct) -> std::result::Result<TokenStream, TokenStream> {
                     /// Returns the smallest element in this vector.
                     #[inline]
                     pub fn min_elem(self) -> #type_path #where_clause {
+                        let mut iter = self.iter();
                         // SAFETY: Unwrap here is safe bacause vector cannot be empty.
-                        self.iter().reduce(|a, b| {
-                            if a <= b { a } else { b }
-                        }).copied().unwrap()
+                        let mut min = iter.next().cloned().unwrap();
+                        for &x in iter {
+                            if x < min {
+                                min = x;
+                            }
+                        }
+                        min
                     }
                 )
             };
@@ -1105,10 +1111,15 @@ fn expand(item: ItemStruct) -> std::result::Result<TokenStream, TokenStream> {
                     /// Returns the largest element in this vector.
                     #[inline]
                     pub fn max_elem(self) -> #type_path #where_clause {
+                        let mut iter = self.iter();
                         // SAFETY: Unwrap here is safe bacause vector cannot be empty.
-                        self.iter().reduce(|a, b| {
-                            if a >= b { a } else { b }
-                        }).copied().unwrap()
+                        let mut max = iter.next().cloned().unwrap();
+                        for &x in iter {
+                            if x > max {
+                                max = x;
+                            }
+                        }
+                        max
                     }
                 )
             };
