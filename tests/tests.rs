@@ -1,7 +1,7 @@
 #![allow(clippy::too_many_arguments)]
 
-mod compiletest;
 mod accepted;
+mod compiletest;
 mod consts;
 mod methods;
 
@@ -19,11 +19,11 @@ macro_rules! new {
 
 macro_rules! tuple_struct {
     ($($ident:ident<$generic:tt>, $($fields:tt),+)*) => {
-        $(   
+        $(
             #[vector]
             #[derive(Debug, Default)]
             pub struct $ident<$generic>($(pub $fields),+);
-        )*  
+        )*
     };
     ($($ident:ident, $($fields:tt),+)*) => {
         $(
@@ -36,11 +36,11 @@ macro_rules! tuple_struct {
 
 macro_rules! named_struct {
     ($($ident:ident<$generic:tt>, $($field:tt: $type:tt),+)*) => {
-        $(   
+        $(
             #[vector]
             #[derive(Debug, Default)]
             pub struct $ident<$generic>{$(pub $field: $type),+}
-        )*  
+        )*
     };
     ($($ident:ident, $($field:ident: $type:tt),+)*) => {
         $(
@@ -106,4 +106,3 @@ named_struct! {
     N4xi32, x: i32, y: i32, z: i32, w: i32
     N8xi32, x: i32, y: i32, z: i32, w: i32, a: i32, b: i32, c: i32, d: i32
 }
-

@@ -1206,7 +1206,7 @@ fn expand(item: ItemStruct) -> std::result::Result<TokenStream, TokenStream> {
             };
 
             quote!(
-                /// Computes the absolute value of self. 
+                /// Computes the absolute value of self.
                 #[inline]
                 pub fn abs(self) -> Self #where_clause {
                     Self::new(#inner_new)
