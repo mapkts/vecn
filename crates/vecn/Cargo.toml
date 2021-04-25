@@ -1,15 +1,16 @@
 [package]
 name = "vecn"
-version = "0.0.0"
+version = "0.1.0"
 authors = ["Aaron Taner <mapkts@gmail.com>"]
 description = "A procedural macro that transforms user-defined structs into general vector types." 
 repository = "https://github.com/mapkts/vecn"
 documentation = "https://docs.rs/vecn/"
-readme = "../README.md"
+readme = "../../README.md"
 license = "MIT"
 keywords = ["vector", "macro"]
 categories = ["mathematics", "data-structures"]
 edition = "2018"
+workspace = "../../"
 
 [dependencies]
 syn = { version = "1.0", features = ["full", "extra-traits"] }
@@ -21,10 +22,10 @@ num = "0.4"
 trybuild = { version = "1.0", features = ["diff"] }
 rustversion = "1.0"
 
-
 [lib]
 proc-macro = true
 
 [[test]]
 name = "integration"
 path = "../../tests/tests.rs"
+
