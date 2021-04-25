@@ -30,6 +30,7 @@ rustversion = "1.0"
 
 [lib]
 proc-macro = true
+path = "src/lib.rs"
 
 [[test]]
 name = "integration"
