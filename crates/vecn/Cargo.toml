@@ -1,6 +1,6 @@
 [package]
 name = "vecn"
-version = "0.0.0"
+version = "0.1.0"
 authors = ["Aaron Taner <mapkts@gmail.com>"]
 description = "A procedural macro that transforms user-defined structs into general vector types." 
 repository = "https://github.com/mapkts/vecn"
