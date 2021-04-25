@@ -600,6 +600,9 @@ fn expand(item: ItemStruct) -> std::result::Result<TokenStream, TokenStream> {
     let impl_fn_shared = {
         let impl_consts = {
             // ONLY: is_primitive
+            //
+            // We have no means to construct a generic const because calls in constants are limited
+            // to constant functions, tuple structs and tuple variants.
             let const_zero = if is_primitive {
                 let zero = if is_float { quote!(0.) } else { quote!(0) };
                 let zeros = repeat(&zero, fields_count);
@@ -911,7 +914,7 @@ fn expand(item: ItemStruct) -> std::result::Result<TokenStream, TokenStream> {
                 };
 
                 let one = if is_float {
-                    quote!(0.)
+                    quote!(1.)
                 } else {
                     quote!(#type_path::one())
                 };
@@ -940,12 +943,13 @@ fn expand(item: ItemStruct) -> std::result::Result<TokenStream, TokenStream> {
             quote!()
         };
 
-        let impl_fn_distance = if fields_count <= 4 {
-            // ONLY: fields_count <= 4
+        let impl_fn_distance = if fields_count <= 4 && (is_float || is_generic) {
+            // ONLY: fields_count <= 4 && (is_float || is_generic)
             let fn_distance_squared = {
                 let where_clause = if is_generic {
                     quote!(
                         where #type_path: core::marker::Copy
+                        + num::traits::real::Real
                         + core::ops::Add<Output=#type_path>
                         + core::ops::Sub<Output=#type_path>
                         + core::ops::Mul<Output=#type_path>
@@ -976,17 +980,13 @@ fn expand(item: ItemStruct) -> std::result::Result<TokenStream, TokenStream> {
                     quote!()
                 };
 
-                if is_generic || is_float {
-                    quote!(
-                        /// Returns the euclidean distance between two points.
-                        #[inline]
-                        pub fn distance(self, other: Self) -> #type_path #where_clause {
-                            (self - other).length()
-                        }
-                    )
-                } else {
-                    quote!()
-                }
+                quote!(
+                    /// Returns the euclidean distance between two points.
+                    #[inline]
+                    pub fn distance(self, other: Self) -> #type_path #where_clause {
+                        (self - other).length()
+                    }
+                )
             };
 
             quote!(
@@ -1206,7 +1206,7 @@ fn expand(item: ItemStruct) -> std::result::Result<TokenStream, TokenStream> {
             };
 
             quote!(
-                /// Computes the absolute value of self. Returns NAN if the number is NAN.
+                /// Computes the absolute value of self. 
                 #[inline]
                 pub fn abs(self) -> Self #where_clause {
                     Self::new(#inner_new)
@@ -1251,11 +1251,12 @@ fn expand(item: ItemStruct) -> std::result::Result<TokenStream, TokenStream> {
             };
             quote!(
                 /// Restricts each element in `self` to a certain interval given by the
-                /// corresponing element in `min` and `max'.
+                /// corresponing element in `min` and `max`.
                 ///
                 /// # Panics
                 ///
-                /// Panics if `min > max`, `min` is NaN, or `max` is NaN, element-wised.
+                /// For each corresponing element in `min` and `max`, panics if `min > max`, `min`
+                /// is NaN, or `max` is NaN.
                 pub fn clamp(self, min: Self, max: Self) -> Self #where_clause {
                     fn _clamp<T>(x: T, min: T, max: T) -> T where T: core::cmp::PartialOrd {
                         assert!(min <= max);
