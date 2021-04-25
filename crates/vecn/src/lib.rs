@@ -1216,7 +1216,7 @@ fn expand(item: ItemStruct) -> std::result::Result<TokenStream, TokenStream> {
             quote!()
         };
 
-        let impl_fn_normalize = if fields_count <= 4 && is_generic || is_float {
+        let impl_fn_normalize = if fields_count <= 4 && (is_generic || is_float) {
             let where_clause = if is_generic {
                 quote!(
                     where #type_path: core::ops::Add<Output=#type_path>
