@@ -748,7 +748,7 @@ fn expand(item: ItemStruct) -> std::result::Result<TokenStream, TokenStream> {
                     .collect::<Vec<Ident>>()
             };
             let where_clause = if is_generic {
-                quote!( where #type_path: core::marker::Copy + num::traits::One + num::traits::Zero)
+                quote!( where #type_path: core::marker::Copy + num_traits::One + num_traits::Zero)
             } else {
                 quote!()
             };
@@ -895,7 +895,7 @@ fn expand(item: ItemStruct) -> std::result::Result<TokenStream, TokenStream> {
                 let where_clause = if is_generic {
                     quote!(
                         where #type_path: core::marker::Copy
-                        + num::traits::real::Real
+                        + num_traits::real::Real
                         + core::ops::Add<Output=#type_path>
                         + core::ops::Mul<Output=#type_path>
                     )
@@ -918,8 +918,8 @@ fn expand(item: ItemStruct) -> std::result::Result<TokenStream, TokenStream> {
                 let where_clause_length_recip = if is_generic {
                     quote!(
                         where #type_path: core::marker::Copy
-                        + num::traits::One
-                        + num::traits::real::Real
+                        + num_traits::One
+                        + num_traits::real::Real
                         + core::ops::Add<Output=#type_path>
                         + core::ops::Mul<Output=#type_path>
                     )
@@ -963,7 +963,7 @@ fn expand(item: ItemStruct) -> std::result::Result<TokenStream, TokenStream> {
                 let where_clause = if is_generic {
                     quote!(
                         where #type_path: core::marker::Copy
-                        + num::traits::real::Real
+                        + num_traits::real::Real
                         + core::ops::Add<Output=#type_path>
                         + core::ops::Sub<Output=#type_path>
                         + core::ops::Mul<Output=#type_path>
@@ -985,7 +985,7 @@ fn expand(item: ItemStruct) -> std::result::Result<TokenStream, TokenStream> {
                 let where_clause = if is_generic {
                     quote!(
                         where #type_path: core::marker::Copy
-                        + num::traits::real::Real
+                        + num_traits::real::Real
                         + core::ops::Add<Output=#type_path>
                         + core::ops::Sub<Output=#type_path>
                         + core::ops::Mul<Output=#type_path>
@@ -1209,7 +1209,7 @@ fn expand(item: ItemStruct) -> std::result::Result<TokenStream, TokenStream> {
         let impl_fn_abs = if is_generic || is_signed_primitive {
             // ONLY: is_generic || is_signed_primitive
             let where_clause = if is_generic {
-                quote!(where #type_path: num::Signed)
+                quote!(where #type_path: num_traits::sign::Signed)
             } else {
                 quote!()
             };
@@ -1234,7 +1234,7 @@ fn expand(item: ItemStruct) -> std::result::Result<TokenStream, TokenStream> {
             let where_clause = if is_generic {
                 quote!(
                     where #type_path: core::ops::Add<Output=#type_path>
-                    + num::traits::real::Real
+                    + num_traits::real::Real
                 )
             } else {
                 quote!()
