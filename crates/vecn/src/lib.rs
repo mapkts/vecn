@@ -33,13 +33,13 @@
 //! }
 //! ```
 //!
-//! Generic vector types is supported as well, but you will need to manually add the
+//! Generic vector types is supported as well, but you need to manually add the
 //! [`num_traits`](https://crates.io/crates/num-traits) crate to your `Cargo.toml`,  as we use
 //! some num traits to properly bound methods.
 //!
 //! It's recommend to implement primitive vector types whenever possible, because unlike generic
 //! vector types that will cluster a bunch of bounded methods together, methods implemented for
-//! primitive vector types are concise and adequate, which means compiler won't allow you call a
+//! primitive vector types are concise and adequate, which means compiler won't allow you to call a
 //! meaningless method accidentally.
 //!
 //! ```
@@ -154,7 +154,7 @@ macro_rules! err {
     }}
 }
 
-/// A procedural macro that transform user-defined structs into general vector types.
+/// Macro that transforms user-defined structs into general vector types.
 #[proc_macro_attribute]
 pub fn vector(args: TokenStream, input: TokenStream) -> TokenStream {
     let args = parse_macro_input!(args as syn::AttributeArgs);
