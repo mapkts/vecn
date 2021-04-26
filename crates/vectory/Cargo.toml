@@ -6,4 +6,4 @@ edition = "2018"
 
 [dependencies]
 vecn = { path = "../vecn" }
-num = "0.4"
+num-traits = "0.2"
