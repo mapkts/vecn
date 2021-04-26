@@ -458,3 +458,30 @@ fn vec_fn_clamp() {
     let clamped = N4xu32::new(1, 4, 5, 8);
     assert_eq!(n4.clamp(min, max), clamped);
 }
+
+#[test]
+fn vec_cross() {
+    let t1 = T3::<i32>::new(2, 4, 4);
+    let t2 = T3::<i32>::new(1, 2, 3);
+
+    let n1 = N3::<i32>::new(2, 4, 4);
+    let n2 = N3::<i32>::new(1, 2, 3);
+
+    let cross1: T3<i32> = (4 * 3 - 4 * 2, 4 * 1 - 2 * 3, 2 * 2 - 4 * 1).into();
+    let cross2: N3<i32> = (4 * 3 - 4 * 2, 4 * 1 - 2 * 3, 2 * 2 - 4 * 1).into();
+
+    assert_eq!(t1.cross(t2), cross1);
+    assert_eq!(n1.cross(n2), cross2);
+
+    let t1 = T3xi32::new(2, 4, 4);
+    let t2 = T3xi32::new(1, 2, 3);
+
+    let n1 = N3xi32::new(2, 4, 4);
+    let n2 = N3xi32::new(1, 2, 3);
+
+    let cross1: T3xi32 = (4 * 3 - 4 * 2, 4 * 1 - 2 * 3, 2 * 2 - 4 * 1).into();
+    let cross2: N3xi32 = (4 * 3 - 4 * 2, 4 * 1 - 2 * 3, 2 * 2 - 4 * 1).into();
+
+    assert_eq!(t1.cross(t2), cross1);
+    assert_eq!(n1.cross(n2), cross2);
+}

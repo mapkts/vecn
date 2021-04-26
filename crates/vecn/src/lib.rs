@@ -1289,6 +1289,25 @@ fn expand(item: ItemStruct) -> std::result::Result<TokenStream, TokenStream> {
             )
         };
 
+        let impl_fn_cross = if fields_count == 3 {
+            // ONLY: fields_count == 3
+            let where_clause = if is_generic {
+                quote!(where #type_path: Copy + core::ops::Mul<Output=T> + core::ops::Sub<Output=T>)
+            } else {
+                quote!()
+            };
+            quote!(
+                /// Returns the cross product between `self` and `other`.
+                #[inline]
+                pub fn cross(self, other: Self) -> Self #where_clause {
+                    let ((x, y, z), (u, v, w)) = (self.into(), other.into());
+                    (y * w - z * v, z * u - x * w, x * v - y * u).into()
+                }
+            )
+        } else {
+            quote!()
+        };
+
         quote!(
            impl #generics #ident #generics #where_clause {
                #impl_consts
@@ -1308,6 +1327,7 @@ fn expand(item: ItemStruct) -> std::result::Result<TokenStream, TokenStream> {
                #impl_fn_abs
                #impl_fn_normalize
                #impl_fn_clamp
+               #impl_fn_cross
            }
         )
     };
