@@ -33,13 +33,13 @@
 //! }
 //! ```
 //!
-//! Generic vector types is supported as well, but you will need to manually add the
+//! Generic vector types is supported as well, but you need to manually add the
 //! [`num_traits`](https://crates.io/crates/num-traits) crate to your `Cargo.toml`,  as we use
 //! some num traits to properly bound methods.
 //!
 //! It's recommend to implement primitive vector types whenever possible, because unlike generic
 //! vector types that will cluster a bunch of bounded methods together, methods implemented for
-//! primitive vector types are concise and adequate, which means compiler won't allow you call a
+//! primitive vector types are concise and adequate, which means compiler won't allow you to call a
 //! meaningless method accidentally.
 //!
 //! ```
@@ -154,7 +154,7 @@ macro_rules! err {
     }}
 }
 
-/// A procedural macro that transform user-defined structs into general vector types.
+/// Macro that transforms user-defined structs into general vector types.
 #[proc_macro_attribute]
 pub fn vector(args: TokenStream, input: TokenStream) -> TokenStream {
     let args = parse_macro_input!(args as syn::AttributeArgs);
@@ -1308,6 +1308,25 @@ fn expand(item: ItemStruct) -> std::result::Result<TokenStream, TokenStream> {
             quote!()
         };
 
+        let impl_fn_is_nan = if is_generic || is_float {
+            // ONLY: is_generic || is_float
+            let where_clause = if is_generic {
+                quote!(where #type_path: num_traits::float::Float)
+            } else {
+                quote!()
+            };
+
+            quote!(
+                /// Returns `true` if any elements are `NaN`.
+                #[inline]
+                pub fn is_nan(self) -> bool #where_clause {
+                    self.iter().any(|&x| x.is_nan())
+                }
+            )
+        } else {
+            quote!()
+        };
+
         quote!(
            impl #generics #ident #generics #where_clause {
                #impl_consts
@@ -1328,6 +1347,7 @@ fn expand(item: ItemStruct) -> std::result::Result<TokenStream, TokenStream> {
                #impl_fn_normalize
                #impl_fn_clamp
                #impl_fn_cross
+               #impl_fn_is_nan
            }
         )
     };

@@ -485,3 +485,16 @@ fn vec_cross() {
     assert_eq!(t1.cross(t2), cross1);
     assert_eq!(n1.cross(n2), cross2);
 }
+
+#[test]
+fn is_nan() {
+    assert!(T8::<f32>::new(1., 2., 3., f32::NAN, 5., 6., 7., 8.).is_nan());
+    assert!(N8::<f32>::new(1., 2., 3., f32::NAN, 5., 6., 7., 8.).is_nan());
+    assert!(!T8::<f32>::new(1., 2., 3., 4., 5., 6., 7., 8.).is_nan());
+    assert!(!N8::<f32>::new(1., 2., 3., 4., 5., 6., 7., 8.).is_nan());
+
+    assert!(T8xf32::new(1., 2., 3., f32::NAN, 5., 6., 7., 8.).is_nan());
+    assert!(N8xf32::new(1., 2., 3., f32::NAN, 5., 6., 7., 8.).is_nan());
+    assert!(!T8xf32::new(1., 2., 3., 4., 5., 6., 7., 8.).is_nan());
+    assert!(!N8xf32::new(1., 2., 3., 4., 5., 6., 7., 8.).is_nan());
+}
