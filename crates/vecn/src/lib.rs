@@ -1308,6 +1308,25 @@ fn expand(item: ItemStruct) -> std::result::Result<TokenStream, TokenStream> {
             quote!()
         };
 
+        let impl_fn_is_nan = if is_generic || is_float {
+            // ONLY: is_generic || is_float
+            let where_clause = if is_generic {
+                quote!(where #type_path: num_traits::float::Float)
+            } else {
+                quote!()
+            };
+
+            quote!(
+                /// Returns `true` if any elements are `NaN`.
+                #[inline]
+                pub fn is_nan(self) -> bool #where_clause {
+                    self.iter().any(|&x| x.is_nan())
+                }
+            )
+        } else {
+            quote!()
+        };
+
         quote!(
            impl #generics #ident #generics #where_clause {
                #impl_consts
@@ -1328,6 +1347,7 @@ fn expand(item: ItemStruct) -> std::result::Result<TokenStream, TokenStream> {
                #impl_fn_normalize
                #impl_fn_clamp
                #impl_fn_cross
+               #impl_fn_is_nan
            }
         )
     };
