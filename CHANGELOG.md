@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.0](https://www.github.com/mapkts/vecn/compare/v0.1.0...v0.2.0) (2021-04-29)
+
+
+### Features
+
+* add a cross method ([96489dd](https://www.github.com/mapkts/vecn/commit/96489dd7d69eae676c382e192e1945d8a5cba30c))
+* add fn `is_nan` ([d1ea347](https://www.github.com/mapkts/vecn/commit/d1ea347ebb631c37a602192ef59139baf146f635))
+
 ## 0.1.0 (2021-04-25)
 
 
