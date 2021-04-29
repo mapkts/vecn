@@ -1234,16 +1234,22 @@ fn expand(item: ItemStruct) -> std::result::Result<TokenStream, TokenStream> {
             let where_clause = if is_generic {
                 quote!(
                     where #type_path: core::ops::Add<Output=#type_path>
-                    + num_traits::real::Real
+                    + num_traits::real::Real + num_traits::identities::One
                 )
             } else {
                 quote!()
+            };
+            let inv = if is_generic {
+                quote!(let inv = #type_path::one() / self.length();)
+            } else {
+                quote!(let inv = 1.0 / self.length();)
             };
             quote!(
                /// Returns a normalized `self` whose length is equal to 1.
                #[inline]
                pub fn normalize(self) -> Self #where_clause {
-                   self / self.length()
+                   #inv
+                   self * inv
                }
             )
         } else {
