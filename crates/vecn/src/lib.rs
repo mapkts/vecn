@@ -373,26 +373,26 @@ fn expand(item: ItemStruct) -> std::result::Result<TokenStream, TokenStream> {
         let tuple = quote!((#(#ts),*));
         let array = quote!([#type_path; #fields_count]);
         let inner_bracket = if is_tuple {
-            quote!(#(vec.#tuple_indexes),*)
+            quote!(#(self.#tuple_indexes),*)
         } else {
-            quote!(#(vec.#fields),*)
+            quote!(#(self.#fields),*)
         };
 
-        // TODO: Implements `Into` instead of `From`.
-        //
-        // Although `[T; N]: From<Vec>` is equivalent to `Vec: Into<[T; N]>`, we choose the later
+        // Although `[T; N]: From<Vec>` is equivalent to `Vec: Into<[T; N]>`, we choose the latter
         // form because it't more explicit than the former (`Into` traits will display in rustdoc).
         quote!(
-            impl #generics core::convert::From<#ident #generics> for #tuple #where_clause {
+            #[allow(clippy::from_over_into)]
+            impl #generics core::convert::Into<#tuple> for #ident #generics #where_clause {
                 #[inline]
-                fn from(vec: #ident #generics) -> #tuple {
+                fn into(self) -> #tuple {
                     (#inner_bracket)
                 }
             }
 
-            impl #generics core::convert::From<#ident #generics> for #array #where_clause {
+            #[allow(clippy::from_over_into)]
+            impl #generics core::convert::Into<#array> for #ident #generics #where_clause {
                 #[inline]
-                fn from(vec: #ident #generics) -> #array {
+                fn into(self) -> #array {
                     [#inner_bracket]
                 }
             }
