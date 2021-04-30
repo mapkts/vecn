@@ -253,37 +253,37 @@ fn expand(item: ItemStruct) -> std::result::Result<TokenStream, TokenStream> {
 
     let impl_as_ref = {
         quote!(
-            // AsRef<[T]>
-            impl #generics core::convert::AsRef<[#type_path]> for #ident #generics #where_clause {
-                #[inline]
-                fn as_ref(&self) -> &[#type_path] {
-                    self.as_slice()
-                }
+        // AsRef<[T]>
+        impl #generics core::convert::AsRef<[#type_path]> for #ident #generics #where_clause {
+            #[inline]
+            fn as_ref(&self) -> &[#type_path] {
+                self.as_slice()
             }
+        }
 
-            // AsRef<Self>
-            impl #generics core::convert::AsRef<Self> for #ident #generics #where_clause {
-                #[inline]
-                fn as_ref(&self) -> &Self {
-                    self
-                }
+        // AsRef<Self>
+        impl #generics core::convert::AsRef<Self> for #ident #generics #where_clause {
+            #[inline]
+            fn as_ref(&self) -> &Self {
+                self
             }
+        }
 
-            // AsMut<[T]>
-            impl #generics core::convert::AsMut<[#type_path]> for #ident #generics #where_clause {
-                #[inline]
-                fn as_mut(&mut self) -> &mut [#type_path] {
-                    self.as_mut_slice()
-                }
+        // AsMut<[T]>
+        impl #generics core::convert::AsMut<[#type_path]> for #ident #generics #where_clause {
+            #[inline]
+            fn as_mut(&mut self) -> &mut [#type_path] {
+                self.as_mut_slice()
             }
+        }
 
-            // AsMut<Self>
-            impl #generics core::convert::AsMut<Self> for #ident #generics #where_clause {
-                #[inline]
-                fn as_mut(&mut self) -> &mut Self {
-                    self
-                }
+        // AsMut<Self>
+        impl #generics core::convert::AsMut<Self> for #ident #generics #where_clause {
+            #[inline]
+            fn as_mut(&mut self) -> &mut Self {
+                self
             }
+        }
         )
     };
 
@@ -373,26 +373,26 @@ fn expand(item: ItemStruct) -> std::result::Result<TokenStream, TokenStream> {
         let tuple = quote!((#(#ts),*));
         let array = quote!([#type_path; #fields_count]);
         let inner_bracket = if is_tuple {
-            quote!(#(vec.#tuple_indexes),*)
+            quote!(#(self.#tuple_indexes),*)
         } else {
-            quote!(#(vec.#fields),*)
+            quote!(#(self.#fields),*)
         };
 
-        // TODO: Implements `Into` instead of `From`.
-        //
-        // Although `[T; N]: From<Vec>` is equivalent to `Vec: Into<[T; N]>`, we choose the later
+        // Although `[T; N]: From<Vec>` is equivalent to `Vec: Into<[T; N]>`, we choose the latter
         // form because it't more explicit than the former (`Into` traits will display in rustdoc).
         quote!(
-            impl #generics core::convert::From<#ident #generics> for #tuple #where_clause {
+            #[allow(clippy::from_over_into)]
+            impl #generics core::convert::Into<#tuple> for #ident #generics #where_clause {
                 #[inline]
-                fn from(vec: #ident #generics) -> #tuple {
+                fn into(self) -> #tuple {
                     (#inner_bracket)
                 }
             }
 
-            impl #generics core::convert::From<#ident #generics> for #array #where_clause {
+            #[allow(clippy::from_over_into)]
+            impl #generics core::convert::Into<#array> for #ident #generics #where_clause {
                 #[inline]
-                fn from(vec: #ident #generics) -> #array {
+                fn into(self) -> #array {
                     [#inner_bracket]
                 }
             }
@@ -438,15 +438,9 @@ fn expand(item: ItemStruct) -> std::result::Result<TokenStream, TokenStream> {
     let impl_binop = {
         let impl_binop = |op_trait: proc_macro2::TokenStream,
                           op: proc_macro2::TokenStream,
-                          assign: bool|
+                          op_assgin: bool|
          -> proc_macro2::TokenStream {
-            let impl_generics = if is_generic {
-                let params = generics.as_ref().unwrap().params.clone();
-                quote!(<#params, Rhs>)
-            } else {
-                quote!(<Rhs>)
-            };
-            let output = if !assign {
+            let output = if !op_assgin {
                 quote!(, Output=#type_path)
             } else {
                 quote!()
@@ -456,17 +450,15 @@ fn expand(item: ItemStruct) -> std::result::Result<TokenStream, TokenStream> {
                     quote!(
                         #where_prelude
                         #type_path: core::ops::#op_trait<#type_path #output>
-                        , Rhs: core::convert::Into<#ident #generics>
                     )
                 }
                 false => {
                     quote!(
                         #where_prelude
-                        Rhs: core::convert::Into<#ident #generics>
                     )
                 }
             };
-            let inner = match (is_tuple, assign) {
+            let inner = match (is_tuple, op_assgin) {
                 (true, false) => {
                     quote!(Self::new(#(self.#tuple_indexes.#op(rhs.#tuple_indexes),)*))
                 }
@@ -475,26 +467,24 @@ fn expand(item: ItemStruct) -> std::result::Result<TokenStream, TokenStream> {
                 (false, true) => quote!(#(self.#fields.#op(rhs.#fields);)*),
             };
 
-            if !assign {
+            if !op_assgin {
                 quote!(
-                    impl #impl_generics core::ops::#op_trait<Rhs> for #ident #generics #where_clause
+                    impl #generics core::ops::#op_trait<Self> for #ident #generics #where_clause
                     {
                         type Output = Self;
 
                         #[inline]
-                        fn #op(self, rhs: Rhs) -> Self::Output {
-                            let rhs: Self = rhs.into();
+                        fn #op(self, rhs: Self) -> Self::Output {
                             #inner
                         }
                     }
                 )
             } else {
                 quote!(
-                    impl #impl_generics core::ops::#op_trait<Rhs> for #ident #generics #where_clause
+                    impl #generics core::ops::#op_trait<Self> for #ident #generics #where_clause
                     {
                         #[inline]
-                        fn #op(&mut self, rhs: Rhs) {
-                            let rhs: Self = rhs.into();
+                        fn #op(&mut self, rhs: Self) {
                             #inner
                         }
                     }
@@ -523,30 +513,173 @@ fn expand(item: ItemStruct) -> std::result::Result<TokenStream, TokenStream> {
         }
     };
 
-    #[rustfmt::skip]
-    let impl_binop_commutative = {
-        let impl_binop_commutative = |op_trait: proc_macro2::TokenStream,
-                                      op: proc_macro2::TokenStream,
-                                      primitive: Option<proc_macro2::TokenStream>|
-         -> proc_macro2::TokenStream {
-            let ident = if is_generic {
-                quote!(#ident<#primitive>)
+    // ONLY: This can only implement `mul<T>` and `div<T>`.
+    let impl_binop_inner = {
+        let impl_mul = {
+            let where_clause = if is_generic {
+                quote!(#where_prelude #type_path: core::marker::Copy + core::ops::Mul<Output=T>)
             } else {
-                quote!(#ident)
+                quote!()
             };
-            let primitive = if is_generic { quote!(#primitive) } else { quote!(#type_path) };
-
+            let inner = if is_tuple {
+                quote!(Self::new(#(self.#tuple_indexes * rhs),*))
+            } else {
+                quote!(Self::new(#(self.#fields * rhs),*))
+            };
             quote!(
-                impl core::ops::#op_trait<#ident> for #primitive {
-                    type Output = #ident;
+                impl #generics core::ops::Mul<#type_path> for #ident #generics #where_clause
+                {
+                    type Output = Self;
 
                     #[inline]
-                    fn #op(self, rhs: #ident) -> Self::Output {
-                        rhs.#op(self)
+                    fn mul(self, rhs: #type_path) -> Self::Output {
+                        #inner
                     }
                 }
             )
         };
+
+        let impl_mul_assign = {
+            let where_clause = if is_generic {
+                quote!(#where_prelude #type_path: core::marker::Copy + core::ops::MulAssign)
+            } else {
+                quote!()
+            };
+            let inner = if is_tuple {
+                quote!(#(self.#tuple_indexes *= rhs;)*)
+            } else {
+                quote!(#(self.#fields *= rhs;)*)
+            };
+            quote!(
+                impl #generics core::ops::MulAssign<#type_path> for #ident #generics #where_clause
+                {
+                    #[inline]
+                    fn mul_assign(&mut self, rhs: #type_path) {
+                        #inner
+                    }
+                }
+            )
+        };
+
+        // Divisions are generally much slower than multiplications on modern CPUs, thus at
+        // here we use a single division to compute the scalar's reciprocal and then perform
+        // three component-wise multiplications.
+        //
+        // It is a common misconception that these sorts of optimizations are unnecessary
+        // because the compiler will perform the necessary analysis. Compilers are
+        // generally restricted from performing many transformations of this type.
+        // For division, the IEEE floating-point standard requires that x/x = 1 for
+        // all x, but if we compute 1/x and store it in a variable and then
+        // multiply x by that value, it is not guaranteed that 1 will be the result.
+        // In this case, we are willing to lose that guarantee in exchange for higher
+        // performance.
+        //
+        // See https://www.pbr-book.org/3ed-2018/Geometry_and_Transformations/Vectors
+        let impl_div = {
+            let where_clause = if is_generic {
+                quote!(
+                    #where_prelude #type_path: core::marker::Copy
+                    + core::ops::Mul<Output=T>
+                    + core::ops::Div<Output=T>
+                    + num_traits::identities::One
+                )
+            } else {
+                quote!()
+            };
+            let one = if is_generic {
+                quote!(#type_path::one())
+            } else if is_float {
+                quote!(1.0)
+            } else {
+                quote!(1)
+            };
+            let inner = if is_tuple {
+                quote!(Self::new(#(self.#tuple_indexes * inv),*))
+            } else {
+                quote!(Self::new(#(self.#fields * inv),*))
+            };
+            quote!(
+                impl #generics core::ops::Div<#type_path> for #ident #generics #where_clause
+                {
+                    type Output = Self;
+
+                    #[inline]
+                    fn div(self, rhs: #type_path) -> Self::Output {
+                        let inv = #one / rhs;
+                        #inner
+                    }
+                }
+            )
+        };
+
+        let impl_div_assign = {
+            let where_clause = if is_generic {
+                quote!(
+                    #where_prelude #type_path: core::marker::Copy
+                    + core::ops::Div<Output=T>
+                    + core::ops::Mul<Output=T>
+                    + core::ops::MulAssign
+                    + num_traits::identities::One
+                )
+            } else {
+                quote!()
+            };
+            let one = if is_generic {
+                quote!(#type_path::one())
+            } else if is_float {
+                quote!(1.)
+            } else {
+                quote!(1)
+            };
+            let inner = if is_tuple {
+                quote!(#(self.#tuple_indexes *= inv;)*)
+            } else {
+                quote!(#(self.#fields *= inv;)*)
+            };
+            quote!(
+                impl #generics core::ops::DivAssign<#type_path> for #ident #generics #where_clause
+                {
+                    #[inline]
+                    fn div_assign(&mut self, rhs: #type_path) {
+                        let inv = #one / rhs;
+                        #inner
+                    }
+                }
+            )
+        };
+        quote!(
+            #impl_mul
+            #impl_mul_assign
+            #impl_div
+            #impl_div_assign
+        )
+    };
+
+    #[rustfmt::skip]
+    let impl_binop_commutative = {
+        let impl_binop_commutative = |op_trait: proc_macro2::TokenStream,
+        op: proc_macro2::TokenStream,
+        primitive: Option<proc_macro2::TokenStream>|
+            -> proc_macro2::TokenStream {
+                let ident = if is_generic {
+                    quote!(#ident<#primitive>)
+                } else {
+                    quote!(#ident)
+                };
+                let primitive = if is_generic { quote!(#primitive) } else { quote!(#type_path) };
+
+                quote!(
+                    impl core::ops::#op_trait<#ident> for #primitive {
+                        type Output = #ident;
+
+                        #[inline]
+                        fn #op(self, rhs: #ident) -> Self::Output {
+                            let lhs: #ident = self.into();
+                            rhs.#op(lhs)
+                        }
+                    }
+                )
+            };
 
         if is_generic {
             let impl_add_f32  = impl_binop_commutative(quote!(Add), quote!(add), Some(quote!(f32)));
@@ -598,7 +731,7 @@ fn expand(item: ItemStruct) -> std::result::Result<TokenStream, TokenStream> {
                 #impl_mul_u64 
                 #impl_mul_i128
                 #impl_mul_u128
-            )
+                )
         } else if is_primitive {
             let impl_add = impl_binop_commutative(quote!(Add), quote!(add), None);
             let impl_mul = impl_binop_commutative(quote!(Mul), quote!(mul), None);
@@ -941,7 +1074,7 @@ fn expand(item: ItemStruct) -> std::result::Result<TokenStream, TokenStream> {
                     /// Panics if `self` is of length zero.
                     #[inline]
                     pub fn length_recip(self) -> #type_path #where_clause_length_recip {
-                       #one / self.length()
+                        #one / self.length()
                     }
                 )
             } else {
@@ -1173,7 +1306,7 @@ fn expand(item: ItemStruct) -> std::result::Result<TokenStream, TokenStream> {
                     #[inline]
                     pub fn map<M, F>(self, mut f: F) -> #ident<M>
                     where #m_bounds F: core::ops::FnMut(#type_path) -> M {
-                       #ident::new(#inner_new)
+                        #ident::new(#inner_new)
                     }
                 )
             } else {
@@ -1234,17 +1367,23 @@ fn expand(item: ItemStruct) -> std::result::Result<TokenStream, TokenStream> {
             let where_clause = if is_generic {
                 quote!(
                     where #type_path: core::ops::Add<Output=#type_path>
-                    + num_traits::real::Real
+                    + num_traits::real::Real + num_traits::identities::One
                 )
             } else {
                 quote!()
             };
+            let inv = if is_generic {
+                quote!(let inv = #type_path::one() / self.length();)
+            } else {
+                quote!(let inv = 1.0 / self.length();)
+            };
             quote!(
-               /// Returns a normalized `self` whose length is equal to 1.
-               #[inline]
-               pub fn normalize(self) -> Self #where_clause {
-                   self / self.length()
-               }
+                /// Returns a normalized `self` whose length is equal to 1.
+                #[inline]
+                pub fn normalize(self) -> Self #where_clause {
+                    #inv
+                    self * inv
+                }
             )
         } else {
             quote!()
@@ -1328,27 +1467,27 @@ fn expand(item: ItemStruct) -> std::result::Result<TokenStream, TokenStream> {
         };
 
         quote!(
-           impl #generics #ident #generics #where_clause {
-               #impl_consts
-               #impl_fn_new
-               #impl_fn_splat
-               #impl_fn_unit_field
-               #impl_fn_as_ptr
-               #impl_fn_as_slice
-               #impl_fn_sum
-               #impl_fn_product
-               #impl_fn_dot
-               #impl_fn_length
-               #impl_fn_distance
-               #impl_fn_min_max
-               #impl_fn_map
-               #impl_fn_apply
-               #impl_fn_abs
-               #impl_fn_normalize
-               #impl_fn_clamp
-               #impl_fn_cross
-               #impl_fn_is_nan
-           }
+            impl #generics #ident #generics #where_clause {
+                #impl_consts
+                #impl_fn_new
+                #impl_fn_splat
+                #impl_fn_unit_field
+                #impl_fn_as_ptr
+                #impl_fn_as_slice
+                #impl_fn_sum
+                #impl_fn_product
+                #impl_fn_dot
+                #impl_fn_length
+                #impl_fn_distance
+                #impl_fn_min_max
+                #impl_fn_map
+                #impl_fn_apply
+                #impl_fn_abs
+                #impl_fn_normalize
+                #impl_fn_clamp
+                #impl_fn_cross
+                #impl_fn_is_nan
+            }
         )
     };
 
@@ -1368,6 +1507,7 @@ fn expand(item: ItemStruct) -> std::result::Result<TokenStream, TokenStream> {
         // Unops and Binops
         #impl_unop
         #impl_binop
+        #impl_binop_inner
         #impl_binop_commutative
 
         // Shared methods
