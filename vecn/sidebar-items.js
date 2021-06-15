@@ -1,0 +1,1 @@
+initSidebarItems({"attr":[["vector","Macro that transforms user-defined structs into general vector types."]]});
