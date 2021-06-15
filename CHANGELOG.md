@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.2.0](https://www.github.com/mapkts/vecn/compare/v0.1.0...v0.2.0) (2021-06-15)
+
+
+### ⚠ BREAKING CHANGES
+
+* change `Op<Rhs>` to only `Op<Self>`
+
+### Features
+
+* add a cross method ([96489dd](https://www.github.com/mapkts/vecn/commit/96489dd7d69eae676c382e192e1945d8a5cba30c))
+* add fn `is_nan` ([d1ea347](https://www.github.com/mapkts/vecn/commit/d1ea347ebb631c37a602192ef59139baf146f635))
+
+
+### Code Refactoring
+
+* change `Op<Rhs>` to only `Op<Self>` ([2b2736a](https://www.github.com/mapkts/vecn/commit/2b2736adc09ac9754615bbb68d4252acd22f6093))
+
+
+### Miscellaneous Chores
+
+* bump version to v0.2.0 ([144a84a](https://www.github.com/mapkts/vecn/commit/144a84a3ee369976de627d04a4f1419a5955b8c0))
+
 ## 0.1.0 (2021-04-25)
 
 
